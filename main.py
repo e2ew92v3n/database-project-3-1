@@ -52,7 +52,7 @@ def create_id():
             print("-----------------------------")
             print("이미 존재하는 아이디입니다.", str(e))
             print("-----------------------------")
-            time.sleep(2)
+            time.sleep(1)
             break
 
 # 물품 구매하기
@@ -250,23 +250,30 @@ while True:
         create_id()
     else:
         print("잘못된 입력")
-        start()
+        time.sleep(1)
+        continue
     if login_result == 0:
         break
 
 # 로그인 성공 후 메뉴작동
-while True:
-    menu_start = menu()
-    if menu_start == 1:
-        buy_product(id)
-    elif menu_start == 2:
-        my_order(id)
-    elif menu_start == 3:
-        my_cart(id)
-    elif menu_start == 4:
-        print("-----------------------------")        
-        print("종료")
-        print("-----------------------------")
-        break
-    else:
-        print("올바른 번호를 입력해주세요.")
+if login_result == 0:
+    while True:
+        menu_start = menu()
+        if menu_start == 1:
+            buy_product(id)
+        elif menu_start == 2:
+            my_order(id)
+        elif menu_start == 3:
+            my_cart(id)
+        elif menu_start == 4:
+            print("-----------------------------")        
+            print("종료")
+            print("-----------------------------")
+            time.sleep(1)
+            break
+        else:
+            print("-----------------------------")
+            print("올바른 번호를 입력해주세요.")
+            print("-----------------------------")
+            time.sleep(1)
+            continue
