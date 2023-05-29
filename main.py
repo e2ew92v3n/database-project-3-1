@@ -4,12 +4,14 @@ import datetime
 conn = sqlite3.connect('C:/Users/aeiou/Documents/dbproject/shop.db')
 curser = conn.cursor()
 
+# 시작화면
 def start():
     print("1. 로그인")
     print("2. 회원가입")
     select = input("번호선택 : ")
     return int(select)
 
+# 메뉴보기
 def menu():
     print("1. 상품 구매하기")
     print("2. 구매내역 보기")
@@ -18,7 +20,8 @@ def menu():
     select = input("번호선택 : ")
     return int(select)
 
-def creat_id():
+# 아이디 만들기
+def create_id():
     print("-----------------------------")
     print("아이디 생성")
     print("-----------------------------")
@@ -37,7 +40,8 @@ def creat_id():
     print("아이디 생성 완료")
     print("-----------------------------")
     start()
-    
+
+# 물품 구매하기
 def buy_product(id):
     curser.execute("SELECT * FROM product")
     rows = curser.fetchall()
@@ -57,9 +61,11 @@ def buy_product(id):
                    (?, ?, ?, ?, ?)
                    """, (order_id, id, product_id, quantity, formatted_date))
     conn.commit()
+    print("-----------------------------")
     print("구매완료")
     print("-----------------------------")
-    
+
+# 데이터베이스의 주문목록에서 다음번호 가져오기
 def __get_next_order_id():
     curser.execute("SELECT MAX(order_id) FROM order_detail")
     max = curser.fetchone()
@@ -67,6 +73,7 @@ def __get_next_order_id():
     next_order_id = last_order_id + 1
     return int(next_order_id)
 
+# 내 주문목록 보기
 def my_order(id):
     print("-----------------------------")
     print("나의 구매내역")
@@ -83,6 +90,7 @@ def my_order(id):
         print("주문날짜 : ", row[2])
         print("-----------------------------")
 
+# 로그인 하기
 def login():
     id = input("id : ")
     pw = input("pw : ")
@@ -98,16 +106,18 @@ def login():
         print("로그인 실패")
         print("-----------------------------")
         return id, 1
-    
+
+# 프로그램 시작
 while True:
     user_start = start()
     if user_start == 1:
         id, login_result = login()
     elif user_start == 2:
-        creat_id()
+        create_id()
     if login_result == 0:
         break
 
+# 로그인 성공 후 메뉴
 while True:
     menu_start = menu()    
     if menu_start == 1:
