@@ -214,7 +214,7 @@ def my_cart(id):
                 print("잘못된 입력")
                 time.sleep(1)
                 continue
-        
+
 # 구매내역 보기
 def my_order(id):
     while True:
