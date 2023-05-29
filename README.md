@@ -16,4 +16,5 @@ Python, sqlite3
 
 ## 2. 데이터베이스의 구조
 ### er다이어그램
+![image](https://github.com/e2ew92v3n/database_temp/assets/133492114/9bf3eef3-dca5-4ed1-9a4e-f30c267e4888)
 ### 스키마
