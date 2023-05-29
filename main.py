@@ -33,6 +33,9 @@ def creat_id():
                    (?, ?, ?, ?, ?, ?)
                    """, (id, pw, name, email, phone, adress))
     conn.commit()
+    print("-----------------------------")
+    print("아이디 생성 완료")
+    print("-----------------------------")
     start()
     
 def buy_product(id):
