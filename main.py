@@ -87,7 +87,7 @@ def buy_product(id):
         print("-----------------------------")
         return menu()
     else:
-        return menu()
+        return menu_start
 
 # 데이터베이스의 주문목록에서 다음번호 가져오기
 def __get_next_id():
