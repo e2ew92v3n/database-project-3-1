@@ -69,63 +69,65 @@ def create_id():
 
 # 물품 구매하기
 def buy_product(id):
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("-----------------------------")
-    print("상품 보기")
-    print("-----------------------------")
-    curser.execute("SELECT * FROM product")
-    rows = curser.fetchall()
-    for row in rows:
-        print("상품번호 : ", row[0])        
-        print("이름 : ", row[1])
-        print("가격 : ", row[2])
-        print("설명 : ", row[3])
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
         print("-----------------------------")
-    print("1. 장바구니에 넣기")
-    print("2. 구매하기")
-    print("3. 뒤로가기")
-    select = input("번호선택 : ")
-    
-    if select == "1":
-        product_id = input("카트에 넣고 싶은 상품번호 입력 : ")
-        quantity = input("상품 갯수 입력 : ")
-        cart_id = __get_next_id("cart", "cart_id")
-        curser.execute("""
-                    INSERT INTO cart (cart_id, id, product_id, quantity) VALUES
-                    (?, ?, ?, ?)
-                    """, (cart_id, id, product_id, quantity))
-        conn.commit()
+        print("상품 보기")
         print("-----------------------------")
-        print("장바구니에 상품을 담았습니다.")
-        print("-----------------------------")
-        time.sleep(1)
-        return buy_product(id)
-    elif select == "2":
-        product_id = input("구매하고 싶은 상품번호 입력 : ")
-        quantity = input("상품 갯수 입력 : ")
-        order_id = __get_next_id("order_detail", "order_id")
-        current_date = datetime.datetime.now()
-        formatted_date = current_date.strftime("%y%m%d")
-        curser.execute("""
-                    INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
-                    (?, ?, ?, ?, ?)
-                    """, (order_id, id, product_id, quantity, formatted_date))
-        conn.commit()
-        print("-----------------------------")
-        print("구매완료")
-        print("-----------------------------")
-        time.sleep(1)
-        return menu_start
-    elif select == "3":
-        print("-----------------------------")
-        print("뒤로가기")
-        print("-----------------------------")
-        time.sleep(1)
-        return menu_start
-    else:
-        print("잘못된 번호 입력")
-        time.sleep(1)
-        return buy_product(id)
+        curser.execute("SELECT * FROM product")
+        rows = curser.fetchall()
+        for row in rows:
+            print("상품번호 : ", row[0])        
+            print("이름 : ", row[1])
+            print("가격 : ", row[2])
+            print("설명 : ", row[3])
+            print("-----------------------------")
+        print("1. 장바구니에 넣기")
+        print("2. 구매하기")
+        print("3. 뒤로가기")
+        select = input("번호선택 : ")
+        
+        if select == "1":
+            product_id = input("카트에 넣고 싶은 상품번호 입력 : ")
+            quantity = input("상품 갯수 입력 : ")
+            cart_id = __get_next_id("cart", "cart_id")
+            curser.execute("""
+                        INSERT INTO cart (cart_id, id, product_id, quantity) VALUES
+                        (?, ?, ?, ?)
+                        """, (cart_id, id, product_id, quantity))
+            conn.commit()
+            print("-----------------------------")
+            print("장바구니에 상품을 담았습니다.")
+            print("-----------------------------")
+            time.sleep(1)
+            continue
+        elif select == "2":
+            product_id = input("구매하고 싶은 상품번호 입력 : ")
+            quantity = input("상품 갯수 입력 : ")
+            order_id = __get_next_id("order_detail", "order_id")
+            current_date = datetime.datetime.now()
+            formatted_date = current_date.strftime("%y%m%d")
+            curser.execute("""
+                        INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
+                        (?, ?, ?, ?, ?)
+                        """, (order_id, id, product_id, quantity, formatted_date))
+            conn.commit()
+            print("-----------------------------")
+            print("구매완료")
+            print("-----------------------------")
+            time.sleep(1)
+            continue
+        elif select == "3":
+            print("-----------------------------")
+            print("뒤로가기")
+            print("-----------------------------")
+            time.sleep(1)
+            break
+        else:
+            print("잘못된 번호 입력")
+            time.sleep(1)
+            menu_start = buy_product(id)
+            continue
 
 # 테이블의 고유번호 생성하기
 def __get_next_id(table, column):
