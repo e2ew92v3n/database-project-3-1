@@ -61,7 +61,7 @@ def buy_product(id):
     if select == "1":
         product_id = input("카트에 넣고 싶은 상품번호 입력 : ")
         quantity = input("상품 갯수 입력 : ")
-        cart_id = __get_next_id()
+        cart_id = __get_next_id("cart", "cart_id")
         curser.execute("""
                     INSERT INTO cart (cart_id, id, product_id, quantity) VALUES
                     (?, ?, ?, ?)
@@ -74,7 +74,7 @@ def buy_product(id):
     elif select == "2":
         product_id = input("구매하고 싶은 상품번호 입력 : ")
         quantity = input("상품 갯수 입력 : ")
-        order_id = __get_next_id()
+        order_id = __get_next_id("order_detail", "order_id")
         current_date = datetime.datetime.now()
         formatted_date = current_date.strftime("%y%m%d")
         curser.execute("""
@@ -89,14 +89,65 @@ def buy_product(id):
     else:
         return menu_start
 
-# 데이터베이스의 주문목록에서 다음번호 가져오기
-def __get_next_id():
-    curser.execute("SELECT MAX(order_id) FROM order_detail")
+# 데이터베이스 고유번호 번호 생성하기
+def __get_next_id(table, column):
+    curser.execute(f"SELECT MAX({column}) FROM {table}".format(column, table))
     max = curser.fetchone()
     last_order_id = max[0]
-    next_order_id = last_order_id + 1
-    return int(next_order_id)
+    if last_order_id is None:
+        return int(1)
+    else:      
+        next_order_id = last_order_id + 1
+        return int(next_order_id)
 
+# 카트에 있는 물품 조회하고 구매하기
+def my_cart(id):
+    item_list = []
+    print("-----------------------------")
+    print("카트에 담은 상품")
+    print("-----------------------------")
+    curser.execute("""
+                   SELECT p.name, c.quantity, p.product_id
+                   FROM product as p, cart as c
+                   WHERE p.product_id == c.product_id AND c.id == ?
+                   """, (id, ))
+    rows = curser.fetchall()
+    for row in rows:
+        print("상품명 : ", row[0])
+        print("갯수 : ", row[1])
+        item_list.append((row[2], row[1])) # 상품 고유id와 갯수를 리스트에 저장
+        print("-----------------------------")
+    print("1. 카트에 담은 물품 구매하기")
+    print("2. 뒤로가기")
+    select = input("번호선택 : ")
+    
+    # 카트에 있는 물건 구매하기
+    if select == "1":
+        for item in item_list:
+            product_id = item[0]
+            quantity = item[1]
+            order_id = __get_next_id("order_detail", "order_id")
+            current_date = datetime.datetime.now()
+            formatted_date = current_date.strftime("%y%m%d")
+            curser.execute("""
+                        INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
+                        (?, ?, ?, ?, ?)
+                        """, (order_id, id, product_id, quantity, formatted_date))
+            conn.commit()
+        print("-----------------------------")
+        print("장바구니에 있는 품목 구매완료")
+        print("-----------------------------")
+        curser.execute("""
+                       DELETE FROM cart
+                       WHERE id == ?
+                       """, (id, ))
+        conn.commit()
+        return menu_start
+    elif select == "2":
+        return menu_start
+    else:
+        return my_cart(id)
+        
 # 내 주문목록 보기
 def my_order(id):
     print("-----------------------------")
@@ -149,7 +200,7 @@ while True:
     elif menu_start == 2:
         my_order(id)
     elif menu_start == 3:
-        None # 장바구니 보기 기능 만들어야 함
+        my_cart(id)
     elif menu_start == 4:
         print("-----------------------------")        
         print("종료")
