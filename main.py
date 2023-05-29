@@ -11,6 +11,9 @@ def start():
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         try:
+            print("-----------------------------")
+            print("쇼핑몰")
+            print("-----------------------------")
             print("1. 로그인")
             print("2. 회원가입")
             select = input("번호선택 : ")
@@ -92,7 +95,7 @@ def buy_product(id):
         
         if select == "1":
             product_id = input("카트에 넣고 싶은 상품번호 입력 : ")
-            quantity = input("상품 갯수 입력 : ")
+            quantity = input("상품 개수 입력 : ")
             cart_id = __get_next_id("cart", "cart_id")
             curser.execute("""
                         INSERT INTO cart (cart_id, id, product_id, quantity) VALUES
@@ -148,7 +151,7 @@ def my_cart(id):
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("-----------------------------")
-        print("카트에 담은 상품")
+        print("장바구니에 담은 상품")
         print("-----------------------------")
         curser.execute("""
                     SELECT p.name, c.quantity, p.product_id
@@ -164,48 +167,49 @@ def my_cart(id):
             if select == "1":
                 time.sleep(1)
                 break
-        for row in rows:
-            print("상품명 : ", row[0])
-            print("갯수 : ", row[1])
-            item_list.append((row[2], row[1])) # 상품 고유id와 갯수를 리스트에 저장
-            print("-----------------------------")
-        print("1. 장바구니에 담은 물품 구매하기")
-        print("2. 뒤로가기")
-        select = input("번호선택 : ")
-        
-        # 카트에 있는 물건 구매하기
-        if select == "1":
-            for item in item_list:
-                product_id = item[0]
-                quantity = item[1]
-                order_id = __get_next_id("order_detail", "order_id")
-                current_date = datetime.datetime.now()
-                formatted_date = current_date.strftime("%y%m%d")
-                curser.execute("""
-                            INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
-                            (?, ?, ?, ?, ?)
-                            """, (order_id, id, product_id, quantity, formatted_date))
-                conn.commit()
-            print("-----------------------------")
-            print("장바구니에 있는 품목 구매완료")
-            print("-----------------------------")
-            curser.execute("""
-                        DELETE FROM cart
-                        WHERE id == ?
-                        """, (id, ))
-            conn.commit()
-            time.sleep(1)
-            continue
-        elif select == "2":
-            print("-----------------------------")
-            print("뒤로가기")
-            print("-----------------------------")
-            time.sleep(1)
-            break
         else:
-            print("잘못된 입력")
-            time.sleep(1)
-            continue
+            for row in rows:
+                print("상품명 : ", row[0])
+                print("갯수 : ", row[1])
+                item_list.append((row[2], row[1])) # 상품 고유id와 갯수를 리스트에 저장
+                print("-----------------------------")
+            print("1. 장바구니에 담은 물품 구매하기")
+            print("2. 뒤로가기")
+            select = input("번호선택 : ")
+            
+            # 카트에 있는 물건 구매하기
+            if select == "1":
+                for item in item_list:
+                    product_id = item[0]
+                    quantity = item[1]
+                    order_id = __get_next_id("order_detail", "order_id")
+                    current_date = datetime.datetime.now()
+                    formatted_date = current_date.strftime("%y%m%d")
+                    curser.execute("""
+                                INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
+                                (?, ?, ?, ?, ?)
+                                """, (order_id, id, product_id, quantity, formatted_date))
+                    conn.commit()
+                print("-----------------------------")
+                print("장바구니에 있는 품목 구매완료")
+                print("-----------------------------")
+                curser.execute("""
+                            DELETE FROM cart
+                            WHERE id == ?
+                            """, (id, ))
+                conn.commit()
+                time.sleep(1)
+                continue
+            elif select == "2":
+                print("-----------------------------")
+                print("뒤로가기")
+                print("-----------------------------")
+                time.sleep(1)
+                break
+            else:
+                print("잘못된 입력")
+                time.sleep(1)
+                continue
         
 # 구매내역 보기
 def my_order(id):
@@ -298,7 +302,7 @@ if login_result == 0:
             my_cart(id)
         elif menu_start == 4:
             print("-----------------------------")        
-            print("종료")
+            print("로그아웃")
             print("-----------------------------")
             time.sleep(1)
             break
