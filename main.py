@@ -129,7 +129,6 @@ def buy_product(id):
         else:
             print("잘못된 번호 입력")
             time.sleep(1)
-            menu_start = buy_product(id)
             continue
 
 # 테이블의 고유번호 생성하기
