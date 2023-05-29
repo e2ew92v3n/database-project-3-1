@@ -148,13 +148,14 @@ def __get_next_id(table, column):
 # 카트에 있는 물품 조회하고 구매하기
 def my_cart(id):
     item_list = []
+    sum = 0
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("-----------------------------")
         print("장바구니에 담은 상품")
         print("-----------------------------")
         curser.execute("""
-                    SELECT p.name, c.quantity, p.product_id
+                    SELECT p.name, c.quantity, p.product_id, p.price
                     FROM product as p, cart as c
                     WHERE p.product_id == c.product_id AND c.id == ?
                     """, (id, ))
@@ -172,7 +173,10 @@ def my_cart(id):
                 print("상품명 : ", row[0])
                 print("갯수 : ", row[1])
                 item_list.append((row[2], row[1])) # 상품 고유id와 갯수를 리스트에 저장
+                sum = sum + (row[1] * row[3])
                 print("-----------------------------")
+            print(f"물품의 가격은 총 : {sum}원 입니다.")
+            print("-----------------------------")
             print("1. 장바구니에 담은 물품 구매하기")
             print("2. 뒤로가기")
             select = input("번호선택 : ")
