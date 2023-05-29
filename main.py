@@ -18,7 +18,6 @@ def menu():
     print("3. 장바구니")
     print("4. 종료하기")
     select = input("번호선택 : ")
-    print("-----------------------------")
     return int(select)
 
 # 아이디 만들기
@@ -189,6 +188,7 @@ while True:
         id, login_result = login()
     elif user_start == 2:
         create_id()
+        start()
     if login_result == 0:
         break
 
@@ -206,3 +206,5 @@ while True:
         print("종료")
         print("-----------------------------")
         break
+    else:
+        print("올바른 번호를 입력해주세요.")
