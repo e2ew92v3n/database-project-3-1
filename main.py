@@ -1,11 +1,14 @@
 import sqlite3
 import datetime
+import os
+import time
 
 conn = sqlite3.connect('C:/Users/aeiou/Documents/dbproject/shop.db')
 curser = conn.cursor()
 
 # 시작화면
 def start():
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("1. 로그인")
     print("2. 회원가입")
     select = input("번호선택 : ")
@@ -13,6 +16,7 @@ def start():
 
 # 메뉴보기
 def menu():
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("1. 상품 구매하기")
     print("2. 구매내역 보기")
     print("3. 장바구니")
@@ -22,27 +26,41 @@ def menu():
 
 # 아이디 만들기
 def create_id():
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("-----------------------------")
     print("회원가입")
     print("-----------------------------")
-    id = input("아이디 : ")
-    pw = input("비밀번호 : ")
-    name = input("이름 : ")
-    email = input("이메일 : ")
-    phone = input("전화번호 : ")
-    adress = input("주소 : ")
-    curser.execute("""
-                   INSERT INTO user(id, pw, name, email, phone, adress) VALUES
-                   (?, ?, ?, ?, ?, ?)
-                   """, (id, pw, name, email, phone, adress))
-    conn.commit()
-    print("-----------------------------")
-    print("회원가입 완료")
-    print("-----------------------------")
-    start()
+    while True:
+        try:
+            id = input("아이디 : ")
+            pw = input("비밀번호 : ")
+            name = input("이름 : ")
+            email = input("이메일 : ")
+            phone = input("전화번호 : ")
+            adress = input("주소 : ")
+            curser.execute("""
+                        INSERT INTO user(id, pw, name, email, phone, adress) VALUES
+                        (?, ?, ?, ?, ?, ?)
+                        """, (id, pw, name, email, phone, adress))
+            conn.commit()
+            print("-----------------------------")
+            print("회원가입 완료")
+            print("-----------------------------")
+            time.sleep(1)
+            break
+        except Exception as e:
+            print("-----------------------------")
+            print("이미 존재하는 아이디입니다.", str(e))
+            print("-----------------------------")
+            time.sleep(2)
+            break
 
 # 물품 구매하기
 def buy_product(id):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("-----------------------------")
+    print("상품 보기")
+    print("-----------------------------")
     curser.execute("SELECT * FROM product")
     rows = curser.fetchall()
     for row in rows:
@@ -68,6 +86,7 @@ def buy_product(id):
         print("-----------------------------")
         print("장바구니에 상품을 담았습니다.")
         print("-----------------------------")
+        time.sleep(1)
         return buy_product(id)
     elif select == "2":
         product_id = input("구매하고 싶은 상품번호 입력 : ")
@@ -83,14 +102,17 @@ def buy_product(id):
         print("-----------------------------")
         print("구매완료")
         print("-----------------------------")
+        time.sleep(1)
         return menu_start
     elif select == "3":
         print("-----------------------------")
         print("뒤로가기")
         print("-----------------------------")
+        time.sleep(1)
         return menu_start
     else:
         print("잘못된 번호 입력")
+        time.sleep(1)
         return buy_product(id)
 
 # 테이블의 고유번호 생성하기
@@ -106,6 +128,7 @@ def __get_next_id(table, column):
 
 # 카트에 있는 물품 조회하고 구매하기
 def my_cart(id):
+    os.system('cls' if os.name == 'nt' else 'clear')
     item_list = []
     print("-----------------------------")
     print("카트에 담은 상품")
@@ -116,6 +139,14 @@ def my_cart(id):
                    WHERE p.product_id == c.product_id AND c.id == ?
                    """, (id, ))
     rows = curser.fetchall()
+    if not rows:
+        print("아무 것도 없습니다.")
+        print("-----------------------------")
+        print("1. 뒤로가기")
+        select = input("번호 입력 : ")
+        if select == "1":
+            time.sleep(1)
+            return menu_start
     for row in rows:
         print("상품명 : ", row[0])
         print("갯수 : ", row[1])
@@ -146,18 +177,22 @@ def my_cart(id):
                        WHERE id == ?
                        """, (id, ))
         conn.commit()
+        time.sleep(1)
         return menu_start
     elif select == "2":
         print("-----------------------------")
         print("뒤로가기")
         print("-----------------------------")
+        time.sleep(1)
         return menu_start
     else:
         print("잘못된 입력")
+        time.sleep(1)
         return my_cart(id)
         
-# 내 주문목록 보기
+# 구매내역 보기
 def my_order(id):
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("-----------------------------")
     print("나의 구매내역")
     print("-----------------------------")
@@ -172,9 +207,18 @@ def my_order(id):
         print("갯수 : ", row[1])
         print("주문날짜 : ", row[2])
         print("-----------------------------")
+    print("1. 뒤로가기")
+    select = input("번호 입력 : ")
+    if select == "1":
+        print("-----------------------------")
+        print("뒤로가기")
+        print("-----------------------------")
+        time.sleep(1)
+        return menu_start
 
 # 로그인 하기
 def login():
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("-----------------------------")
     print("로그인")
     print("-----------------------------")
@@ -186,20 +230,26 @@ def login():
         print("-----------------------------")
         print("로그인 성공")
         print("-----------------------------")
+        time.sleep(1)
         return id, 0
     else:
         print("-----------------------------")
         print("로그인 실패")
         print("-----------------------------")
+        time.sleep(1)
         return id, 1
 
 # 프로그램 시작
+login_result = None
+
 while True:
     user_start = start()
     if user_start == 1:
         id, login_result = login()
     elif user_start == 2:
         create_id()
+    else:
+        print("잘못된 입력")
         start()
     if login_result == 0:
         break
