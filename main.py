@@ -23,7 +23,7 @@ def menu():
 # 아이디 만들기
 def create_id():
     print("-----------------------------")
-    print("아이디 생성")
+    print("회원가입")
     print("-----------------------------")
     id = input("아이디 : ")
     pw = input("비밀번호 : ")
@@ -37,7 +37,7 @@ def create_id():
                    """, (id, pw, name, email, phone, adress))
     conn.commit()
     print("-----------------------------")
-    print("아이디 생성 완료")
+    print("회원가입 완료")
     print("-----------------------------")
     start()
 
@@ -84,8 +84,14 @@ def buy_product(id):
         print("구매완료")
         print("-----------------------------")
         return menu_start
-    else:
+    elif select == "3":
+        print("-----------------------------")
+        print("뒤로가기")
+        print("-----------------------------")
         return menu_start
+    else:
+        print("잘못된 번호 입력")
+        return buy_product(id)
 
 # 테이블의 고유번호 생성하기
 def __get_next_id(table, column):
@@ -142,8 +148,12 @@ def my_cart(id):
         conn.commit()
         return menu_start
     elif select == "2":
+        print("-----------------------------")
+        print("뒤로가기")
+        print("-----------------------------")
         return menu_start
     else:
+        print("잘못된 입력")
         return my_cart(id)
         
 # 내 주문목록 보기
@@ -165,6 +175,9 @@ def my_order(id):
 
 # 로그인 하기
 def login():
+    print("-----------------------------")
+    print("로그인")
+    print("-----------------------------")
     id = input("id : ")
     pw = input("pw : ")
     curser.execute("SELECT id FROM user WHERE id = ? AND pw = ?", (id, pw))
