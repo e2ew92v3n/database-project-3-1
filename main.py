@@ -8,21 +8,33 @@ curser = conn.cursor()
 
 # 시작화면
 def start():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("1. 로그인")
-    print("2. 회원가입")
-    select = input("번호선택 : ")
-    return int(select)
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        try:
+            print("1. 로그인")
+            print("2. 회원가입")
+            select = input("번호선택 : ")
+            return int(select)
+        except Exception as e:
+            print("잘못된 번호 입력", str(e))
+            time.sleep(1)
+            continue
 
 # 메뉴보기
 def menu():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("1. 상품 구매하기")
-    print("2. 구매내역 보기")
-    print("3. 장바구니")
-    print("4. 종료하기")
-    select = input("번호선택 : ")
-    return int(select)
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        try:
+            print("1. 상품 구매하기")
+            print("2. 구매내역 보기")
+            print("3. 장바구니")
+            print("4. 종료하기")
+            select = input("번호선택 : ")
+            return int(select)
+        except Exception as e:
+            print("잘못된 번호 입력", str(e))
+            time.sleep(1)
+            continue
 
 # 아이디 만들기
 def create_id():
