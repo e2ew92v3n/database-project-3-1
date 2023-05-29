@@ -145,9 +145,9 @@ def __get_next_id(table, column):
 
 # 카트에 있는 물품 조회하고 구매하기
 def my_cart(id):
+    item_list = []
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        item_list = []
         print("-----------------------------")
         print("카트에 담은 상품")
         print("-----------------------------")
@@ -221,19 +221,32 @@ def my_order(id):
                     WHERE p.product_id == o.product_id AND o.user_id == ?
                     """, (id, ))
         rows = curser.fetchall()
-        for row in rows:
-            print("상품명 : ", row[0])        
-            print("개수 : ", row[1])
-            print("주문날짜 : ", row[2])
+        if not rows:
             print("-----------------------------")
-        print("1. 뒤로가기")
-        select = input("번호 입력 : ")
-        if select == "1":
+            print("구매내역이 없습니다.")
             print("-----------------------------")
-            print("뒤로가기")
-            print("-----------------------------")
-            time.sleep(1)
-            break
+            print("1. 뒤로가기")
+            select = input("번호 입력 : ")
+            if select == "1":
+                print("-----------------------------")
+                print("뒤로가기")
+                print("-----------------------------")
+                time.sleep(1)
+                break
+        else:
+            for row in rows:
+                print("상품명 : ", row[0])        
+                print("개수 : ", row[1])
+                print("주문날짜 : ", row[2])
+                print("-----------------------------")
+            print("1. 뒤로가기")
+            select = input("번호 입력 : ")
+            if select == "1":
+                print("-----------------------------")
+                print("뒤로가기")
+                print("-----------------------------")
+                time.sleep(1)
+                break
 
 # 로그인 하기
 def login():
