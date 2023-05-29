@@ -42,7 +42,6 @@ def create_id():
     start()
 
 # 물품 구매하기
-# 물품 목록에서 장바구니에 담는 기능 추가 필요함
 def buy_product(id):
     curser.execute("SELECT * FROM product")
     rows = curser.fetchall()
@@ -88,7 +87,7 @@ def buy_product(id):
     else:
         return menu_start
 
-# 데이터베이스 고유번호 번호 생성하기
+# 테이블의 고유번호 생성하기
 def __get_next_id(table, column):
     curser.execute(f"SELECT MAX({column}) FROM {table}".format(column, table))
     max = curser.fetchone()
@@ -192,7 +191,7 @@ while True:
     if login_result == 0:
         break
 
-# 로그인 성공 후 메뉴
+# 로그인 성공 후 메뉴작동
 while True:
     menu_start = menu()
     if menu_start == 1:
