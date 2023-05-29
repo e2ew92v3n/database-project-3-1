@@ -18,6 +18,7 @@ def menu():
     print("3. 장바구니")
     print("4. 종료하기")
     select = input("번호선택 : ")
+    print("-----------------------------")
     return int(select)
 
 # 아이디 만들기
@@ -52,22 +53,44 @@ def buy_product(id):
         print("가격 : ", row[2])
         print("설명 : ", row[3])
         print("-----------------------------")
-    product_id = input("구매하고 싶은 상품번호 입력 : ")
-    quantity = input("상품번호 갯수 입력 : ")
-    order_id = __get_next_order_id()
-    current_date = datetime.datetime.now()
-    formatted_date = current_date.strftime("%y%m%d")
-    curser.execute("""
-                   INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
-                   (?, ?, ?, ?, ?)
-                   """, (order_id, id, product_id, quantity, formatted_date))
-    conn.commit()
-    print("-----------------------------")
-    print("구매완료")
-    print("-----------------------------")
+    print("1. 장바구니에 넣기")
+    print("2. 구매하기")
+    print("3. 뒤로가기")
+    select = input("번호선택 : ")
+    
+    if select == "1":
+        product_id = input("카트에 넣고 싶은 상품번호 입력 : ")
+        quantity = input("상품 갯수 입력 : ")
+        cart_id = __get_next_id()
+        curser.execute("""
+                    INSERT INTO cart (cart_id, id, product_id, quantity) VALUES
+                    (?, ?, ?, ?)
+                    """, (cart_id, id, product_id, quantity))
+        conn.commit()
+        print("-----------------------------")
+        print("장바구니에 상품을 담았습니다.")
+        print("-----------------------------")
+        return buy_product(id)
+    elif select == "2":
+        product_id = input("구매하고 싶은 상품번호 입력 : ")
+        quantity = input("상품 갯수 입력 : ")
+        order_id = __get_next_id()
+        current_date = datetime.datetime.now()
+        formatted_date = current_date.strftime("%y%m%d")
+        curser.execute("""
+                    INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
+                    (?, ?, ?, ?, ?)
+                    """, (order_id, id, product_id, quantity, formatted_date))
+        conn.commit()
+        print("-----------------------------")
+        print("구매완료")
+        print("-----------------------------")
+        return menu()
+    else:
+        return menu()
 
 # 데이터베이스의 주문목록에서 다음번호 가져오기
-def __get_next_order_id():
+def __get_next_id():
     curser.execute("SELECT MAX(order_id) FROM order_detail")
     max = curser.fetchone()
     last_order_id = max[0]
