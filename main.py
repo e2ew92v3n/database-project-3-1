@@ -42,6 +42,7 @@ def create_id():
     start()
 
 # 물품 구매하기
+# 물품 목록에서 장바구니에 담는 기능 추가 필요함
 def buy_product(id):
     curser.execute("SELECT * FROM product")
     rows = curser.fetchall()
@@ -119,13 +120,13 @@ while True:
 
 # 로그인 성공 후 메뉴
 while True:
-    menu_start = menu()    
+    menu_start = menu()
     if menu_start == 1:
         buy_product(id)
     elif menu_start == 2:
         my_order(id)
     elif menu_start == 3:
-        None
+        None # 장바구니 보기 기능 만들어야 함
     elif menu_start == 4:
         print("-----------------------------")        
         print("종료")
