@@ -85,7 +85,7 @@ def buy_product(id):
         print("-----------------------------")
         print("구매완료")
         print("-----------------------------")
-        return menu()
+        return menu_start
     else:
         return menu_start
 
