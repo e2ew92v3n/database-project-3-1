@@ -38,12 +38,15 @@ def menu():
 
 # 아이디 만들기
 def create_id():
-    os.system('cls' if os.name == 'nt' else 'clear')
     print("-----------------------------")
     print("회원가입")
     print("-----------------------------")
     while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
         try:
+            print("-----------------------------")
+            print("아이디 생성하기")
+            print("-----------------------------")
             id = input("아이디 : ")
             pw = input("비밀번호 : ")
             name = input("이름 : ")
@@ -65,7 +68,7 @@ def create_id():
             print("이미 존재하는 아이디입니다.", str(e))
             print("-----------------------------")
             time.sleep(1)
-            break
+            continue
 
 # 물품 구매하기
 def buy_product(id):
@@ -103,7 +106,7 @@ def buy_product(id):
             continue
         elif select == "2":
             product_id = input("구매하고 싶은 상품번호 입력 : ")
-            quantity = input("상품 갯수 입력 : ")
+            quantity = input("상품 개수 입력 : ")
             order_id = __get_next_id("order_detail", "order_id")
             current_date = datetime.datetime.now()
             formatted_date = current_date.strftime("%y%m%d")
@@ -142,93 +145,95 @@ def __get_next_id(table, column):
 
 # 카트에 있는 물품 조회하고 구매하기
 def my_cart(id):
-    os.system('cls' if os.name == 'nt' else 'clear')
-    item_list = []
-    print("-----------------------------")
-    print("카트에 담은 상품")
-    print("-----------------------------")
-    curser.execute("""
-                   SELECT p.name, c.quantity, p.product_id
-                   FROM product as p, cart as c
-                   WHERE p.product_id == c.product_id AND c.id == ?
-                   """, (id, ))
-    rows = curser.fetchall()
-    if not rows:
-        print("아무 것도 없습니다.")
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        item_list = []
         print("-----------------------------")
-        print("1. 뒤로가기")
-        select = input("번호 입력 : ")
-        if select == "1":
-            time.sleep(1)
-            return menu_start
-    for row in rows:
-        print("상품명 : ", row[0])
-        print("갯수 : ", row[1])
-        item_list.append((row[2], row[1])) # 상품 고유id와 갯수를 리스트에 저장
-        print("-----------------------------")
-    print("1. 카트에 담은 물품 구매하기")
-    print("2. 뒤로가기")
-    select = input("번호선택 : ")
-    
-    # 카트에 있는 물건 구매하기
-    if select == "1":
-        for item in item_list:
-            product_id = item[0]
-            quantity = item[1]
-            order_id = __get_next_id("order_detail", "order_id")
-            current_date = datetime.datetime.now()
-            formatted_date = current_date.strftime("%y%m%d")
-            curser.execute("""
-                        INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
-                        (?, ?, ?, ?, ?)
-                        """, (order_id, id, product_id, quantity, formatted_date))
-            conn.commit()
-        print("-----------------------------")
-        print("장바구니에 있는 품목 구매완료")
+        print("카트에 담은 상품")
         print("-----------------------------")
         curser.execute("""
-                       DELETE FROM cart
-                       WHERE id == ?
-                       """, (id, ))
-        conn.commit()
-        time.sleep(1)
-        return menu_start
-    elif select == "2":
-        print("-----------------------------")
-        print("뒤로가기")
-        print("-----------------------------")
-        time.sleep(1)
-        return menu_start
-    else:
-        print("잘못된 입력")
-        time.sleep(1)
-        return my_cart(id)
+                    SELECT p.name, c.quantity, p.product_id
+                    FROM product as p, cart as c
+                    WHERE p.product_id == c.product_id AND c.id == ?
+                    """, (id, ))
+        rows = curser.fetchall()
+        if not rows:
+            print("아무 것도 없습니다.")
+            print("-----------------------------")
+            print("1. 뒤로가기")
+            select = input("번호 입력 : ")
+            if select == "1":
+                time.sleep(1)
+                break
+        for row in rows:
+            print("상품명 : ", row[0])
+            print("갯수 : ", row[1])
+            item_list.append((row[2], row[1])) # 상품 고유id와 갯수를 리스트에 저장
+            print("-----------------------------")
+        print("1. 장바구니에 담은 물품 구매하기")
+        print("2. 뒤로가기")
+        select = input("번호선택 : ")
+        
+        # 카트에 있는 물건 구매하기
+        if select == "1":
+            for item in item_list:
+                product_id = item[0]
+                quantity = item[1]
+                order_id = __get_next_id("order_detail", "order_id")
+                current_date = datetime.datetime.now()
+                formatted_date = current_date.strftime("%y%m%d")
+                curser.execute("""
+                            INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
+                            (?, ?, ?, ?, ?)
+                            """, (order_id, id, product_id, quantity, formatted_date))
+                conn.commit()
+            print("-----------------------------")
+            print("장바구니에 있는 품목 구매완료")
+            print("-----------------------------")
+            curser.execute("""
+                        DELETE FROM cart
+                        WHERE id == ?
+                        """, (id, ))
+            conn.commit()
+            time.sleep(1)
+            continue
+        elif select == "2":
+            print("-----------------------------")
+            print("뒤로가기")
+            print("-----------------------------")
+            time.sleep(1)
+            break
+        else:
+            print("잘못된 입력")
+            time.sleep(1)
+            continue
         
 # 구매내역 보기
 def my_order(id):
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("-----------------------------")
-    print("나의 구매내역")
-    print("-----------------------------")
-    curser.execute("""
-                SELECT p.name, o.quantity, o.order_date
-                FROM product as p, order_detail as o
-                WHERE p.product_id == o.product_id AND o.user_id == ?
-                   """, (id, ))
-    rows = curser.fetchall()
-    for row in rows:
-        print("상품명 : ", row[0])        
-        print("갯수 : ", row[1])
-        print("주문날짜 : ", row[2])
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
         print("-----------------------------")
-    print("1. 뒤로가기")
-    select = input("번호 입력 : ")
-    if select == "1":
+        print("나의 구매내역")
         print("-----------------------------")
-        print("뒤로가기")
-        print("-----------------------------")
-        time.sleep(1)
-        return menu_start
+        curser.execute("""
+                    SELECT p.name, o.quantity, o.order_date
+                    FROM product as p, order_detail as o
+                    WHERE p.product_id == o.product_id AND o.user_id == ?
+                    """, (id, ))
+        rows = curser.fetchall()
+        for row in rows:
+            print("상품명 : ", row[0])        
+            print("개수 : ", row[1])
+            print("주문날짜 : ", row[2])
+            print("-----------------------------")
+        print("1. 뒤로가기")
+        select = input("번호 입력 : ")
+        if select == "1":
+            print("-----------------------------")
+            print("뒤로가기")
+            print("-----------------------------")
+            time.sleep(1)
+            break
 
 # 로그인 하기
 def login():
