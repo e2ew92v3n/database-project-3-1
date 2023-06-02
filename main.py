@@ -4,7 +4,7 @@ import os
 import time
 
 conn = sqlite3.connect('C:/Users/aeiou/Documents/dbproject/shop.db')
-curser = conn.cursor()
+cursor = conn.cursor()
 
 # 시작화면
 def start():
@@ -56,7 +56,7 @@ def create_id():
             email = input("이메일 : ")
             phone = input("전화번호 : ")
             adress = input("주소 : ")
-            curser.execute("""
+            cursor.execute("""
                         INSERT INTO user(id, pw, name, email, phone, adress) VALUES
                         (?, ?, ?, ?, ?, ?)
                         """, (id, pw, name, email, phone, adress))
@@ -80,8 +80,8 @@ def buy_product(id):
         print("-----------------------------")
         print("상품 보기")
         print("-----------------------------")
-        curser.execute("SELECT * FROM product")
-        rows = curser.fetchall()
+        cursor.execute("SELECT * FROM product")
+        rows = cursor.fetchall()
         for row in rows:
             print("상품번호 : ", row[0])        
             print("이름 : ", row[1])
@@ -97,7 +97,7 @@ def buy_product(id):
             product_id = input("카트에 넣고 싶은 상품번호 입력 : ")
             quantity = input("상품 개수 입력 : ")
             cart_id = __get_next_id("cart", "cart_id")
-            curser.execute("""
+            cursor.execute("""
                         INSERT INTO cart (cart_id, id, product_id, quantity) VALUES
                         (?, ?, ?, ?)
                         """, (cart_id, id, product_id, quantity))
@@ -113,7 +113,7 @@ def buy_product(id):
             order_id = __get_next_id("order_detail", "order_id")
             current_date = datetime.datetime.now()
             formatted_date = current_date.strftime("%y%m%d")
-            curser.execute("""
+            cursor.execute("""
                         INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
                         (?, ?, ?, ?, ?)
                         """, (order_id, id, product_id, quantity, formatted_date))
@@ -136,8 +136,8 @@ def buy_product(id):
 
 # 테이블의 고유번호 생성하기
 def __get_next_id(table, column):
-    curser.execute(f"SELECT MAX({column}) FROM {table}".format(column, table))
-    max = curser.fetchone()
+    cursor.execute(f"SELECT MAX({column}) FROM {table}".format(column, table))
+    max = cursor.fetchone()
     last_order_id = max[0]
     if last_order_id is None:
         return int(1)
@@ -154,12 +154,12 @@ def my_cart(id):
         print("-----------------------------")
         print("장바구니에 담은 상품")
         print("-----------------------------")
-        curser.execute("""
+        cursor.execute("""
                     SELECT p.name, c.quantity, p.product_id, p.price
                     FROM product as p, cart as c
                     WHERE p.product_id == c.product_id AND c.id == ?
                     """, (id, ))
-        rows = curser.fetchall()
+        rows = cursor.fetchall()
         if not rows:
             print("아무 것도 없습니다.")
             print("-----------------------------")
@@ -189,7 +189,7 @@ def my_cart(id):
                     order_id = __get_next_id("order_detail", "order_id")
                     current_date = datetime.datetime.now()
                     formatted_date = current_date.strftime("%y%m%d")
-                    curser.execute("""
+                    cursor.execute("""
                                 INSERT INTO order_detail (order_id, user_id, product_id, quantity, order_date) VALUES
                                 (?, ?, ?, ?, ?)
                                 """, (order_id, id, product_id, quantity, formatted_date))
@@ -197,7 +197,7 @@ def my_cart(id):
                 print("-----------------------------")
                 print("장바구니에 있는 품목 구매완료")
                 print("-----------------------------")
-                curser.execute("""
+                cursor.execute("""
                             DELETE FROM cart
                             WHERE id == ?
                             """, (id, ))
@@ -222,12 +222,12 @@ def my_order(id):
         print("-----------------------------")
         print("나의 구매내역")
         print("-----------------------------")
-        curser.execute("""
+        cursor.execute("""
                     SELECT p.name, o.quantity, o.order_date
                     FROM product as p, order_detail as o
                     WHERE p.product_id == o.product_id AND o.user_id == ?
                     """, (id, ))
-        rows = curser.fetchall()
+        rows = cursor.fetchall()
         if not rows:
             print("-----------------------------")
             print("구매내역이 없습니다.")
@@ -263,8 +263,8 @@ def login():
     print("-----------------------------")
     id = input("id : ")
     pw = input("pw : ")
-    curser.execute("SELECT id FROM user WHERE id = ? AND pw = ?", (id, pw))
-    rows = curser.fetchall()
+    cursor.execute("SELECT id FROM user WHERE id = ? AND pw = ?", (id, pw))
+    rows = cursor.fetchall()
     if len(rows) > 0:
         print("-----------------------------")
         print("로그인 성공")
